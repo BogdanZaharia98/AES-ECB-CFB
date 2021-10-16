@@ -26,6 +26,7 @@ public class Main {
                     System.out.print(MC.k1[i]+" ");
             }
             else {
+                Node.setInitialization();
                 encK=MC.encryptKey(MC.k2);
                 System.out.println(" ");
                 System.out.println("Cheie modul CFB: ");
@@ -60,6 +61,8 @@ public class Main {
 
 
             A.readInput(B);
+
+
 
 
 
