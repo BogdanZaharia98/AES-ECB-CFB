@@ -202,25 +202,27 @@ public class Node {
 
     public byte[][] expandKeyEnc(){
 
-        int rcon[]= new int[40];
+        int rcon[]= new int[44];
 
         int i=0,j=0;
-        for(;i<10;i++) {
-            for (; j < 4; j++) {
+        for(;i<11;i++) {
+            for (j=1; j < 4; j++) {
                 if(j>0)
                     rcon[i*4+j]=0x0;
             }
         }
-        rcon[0]=0x1;
-        rcon[4]=0x2;
-        rcon[8]=0x4;
-        rcon[12]=0x8;
-        rcon[16]=0x10;
-        rcon[20]=0x20;
-        rcon[24]=0x40;
-        rcon[28]=0x80;
-        rcon[32]=0x1B;
-        rcon[36]=0x36;
+        rcon[0]=0x8d;
+        rcon[4]=0x1;
+        rcon[8]=0x2;
+        rcon[12]=0x4;
+        rcon[16]=0x8;
+        rcon[20]=0x10;
+        rcon[24]=0x20;
+        rcon[28]=0x40;
+        rcon[32]=0x80;
+        rcon[36]=0x1B;
+        rcon[40]=0x36;
+
 
 
         int[] V=new int[8];
@@ -228,7 +230,7 @@ public class Node {
         int N=4;
         byte[][] key=new byte[4][4];
         i=0;j=0;int ind=0;
-        for(;i<10;i++) {
+        for(;i<4;i++) {
             for (; j < 4; j++) {
                 key[i][j]=k1[ind];
                 ind++;
@@ -249,7 +251,9 @@ public class Node {
 
                     for ( j=0;j<4;j++){
                         x[j]= (byte) ( x[j] ^ (x[j]<<1) ^ (x[j]<<2) ^ (x[j]<<3) ^ (x[j]<<4) ^ 0x63 );
-                        x[j]= (byte) (x[j]^((byte)rcon[i/N]));
+                        if(i<4)
+                            x[j]= (byte) (x[j]^((byte)rcon[j]));
+                        else  x[j]= (byte) (x[j]^((byte)rcon[(i/4)*4+j]));
                         expKey[i][j]= (byte) (x[j] ^ expKey[i - N][j]);
 
                     }
@@ -277,25 +281,26 @@ public class Node {
 
     public byte[][] expandKeyDec(){
 
-        int rcon[]= new int[40];
+        int rcon[]= new int[44];
 
         int i=0,j=0;
-        for(;i<10;i++) {
-            for (; j < 4; j++) {
+        for(;i<11;i++) {
+            for (j=1; j < 4; j++) {
                 if(j>0)
                     rcon[i*4+j]=0x0;
             }
         }
-        rcon[0]=0x1;
-        rcon[4]=0x2;
-        rcon[8]=0x4;
-        rcon[12]=0x8;
-        rcon[16]=0x10;
-        rcon[20]=0x20;
-        rcon[24]=0x40;
-        rcon[28]=0x80;
-        rcon[32]=0x1B;
-        rcon[36]=0x36;
+        rcon[0]=0x8d;
+        rcon[4]=0x1;
+        rcon[8]=0x2;
+        rcon[12]=0x4;
+        rcon[16]=0x8;
+        rcon[20]=0x10;
+        rcon[24]=0x20;
+        rcon[28]=0x40;
+        rcon[32]=0x80;
+        rcon[36]=0x1B;
+        rcon[40]=0x36;
 
 
         int[] V=new int[8];
@@ -303,7 +308,7 @@ public class Node {
         int N=4;
         byte[][] key=new byte[4][4];
         i=0;j=0;int ind=0;
-        for(;i<10;i++) {
+        for(;i<4;i++) {
             for (; j < 4; j++) {
                 key[i][j]=k1[ind];
                 ind++;
@@ -321,7 +326,9 @@ public class Node {
 
                     for ( j=0;j<4;j++){
                         x[j]= (byte) ( (x[j]<<1) ^ (x[j]<<3)  ^ (x[j]<<6) ^ 0x5 );
-                        x[j]= (byte) (x[j]^((byte)rcon[i/N]));
+                        if(i<4)
+                        x[j]= (byte) (x[j]^((byte)rcon[j]));
+                        else  x[j]= (byte) (x[j]^((byte)rcon[(i/4)*4+j]));
                         expKey[i][j]= (byte) (x[j] ^ expKey[i - N][j]);
 
                     }
@@ -364,6 +371,19 @@ public class Node {
         }
 
         for (int r=1;r<=10;r++) {
+            //SubTypes
+            for (i = 0; i < 4; i++) {
+               for(j=0;j<4;j++) {
+                   m[i][j]=getInverse(m[i][j]);
+                   byte t =m[i][j];
+                   m[i][j]= (byte) ( t ^ (t<<1) ^ (t<<2) ^ (t<<3) ^ (t<<4) ^ 0x63);
+               }
+            }
+
+
+
+
+
             //PERMUTATIONS
             byte tmp = m[1][0];
             for (i = 0; i < 3; i++) {
@@ -436,6 +456,15 @@ public class Node {
         }
 
         for (int r=1;r<=10;r++) {
+            //SubTypes
+            for (i = 0; i < 4; i++) {
+                for(j=0;j<4;j++) {
+                    m[i][j]=getInverse(m[i][j]);
+                    byte t =m[i][j];
+                    m[i][j]= (byte) ( t ^ (t<<1) ^ (t<<2) ^ (t<<3) ^ (t<<4) ^ 0x63);
+                }
+            }
+
             //PERMUTATIONS
             byte tmp = iV[1][0];
             for (i = 0; i < 3; i++) {
@@ -505,6 +534,15 @@ public class Node {
         }
 
         for (int r=1;r<=10;r++) {
+            //SubTypes
+            for (i = 0; i < 4; i++) {
+                for(j=0;j<4;j++) {
+                    m[i][j]=getInverse(m[i][j]);
+                    byte t =m[i][j];
+                    m[i][j]= (byte) ( (t<<1) ^ (t<<3) ^ (t<<6)  ^ 0x5);
+                }
+            }
+
             //PERMUTATIONS
             byte tmp = m[1][0];
             for (i = 0; i < 3; i++) {
@@ -572,6 +610,15 @@ public class Node {
         }
 
         for (int r=1;r<=10;r++) {
+            //SubTypes
+            for (i = 0; i < 4; i++) {
+                for(j=0;j<4;j++) {
+                    m[i][j]=getInverse(m[i][j]);
+                    byte t =m[i][j];
+                    m[i][j]= (byte) ( (t<<1) ^ (t<<3) ^ (t<<6)  ^ 0x5);
+                }
+            }
+
             //PERMUTATIONS
             byte tmp = iV2[1][0];
             for (i = 0; i < 3; i++) {

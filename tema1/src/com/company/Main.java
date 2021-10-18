@@ -12,8 +12,10 @@ public class Main {
 
             Node A=new Node();
             double randNumber = Math.random();
+            //randomly set ECB or CFB mode
             int d = (int)(randNumber * 100);
             A.setMode(d%2);
+
             A.setK(MC.K);
 
             byte[] encK;
@@ -58,13 +60,7 @@ public class Main {
             B.setK1(B.decrypt());
 
 
-
-
             A.readInput(B);
-
-
-
-
 
 
             }
