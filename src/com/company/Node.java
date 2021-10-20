@@ -109,7 +109,7 @@ public class Node {
         String s2= Integer.toHexString(b);
         String s;
         if (s2.length()==1){
-             s="0"+s2;
+            s="0"+s2;
         }
         else s=s2;
 
@@ -224,7 +224,7 @@ public class Node {
         rcon[40]=0x36;
 
 
-
+        //Primele 4 blocuri de 32 biti sunt cheia initiala
         int[] V=new int[8];
         int[] s=new int[8];
         int N=4;
@@ -243,6 +243,7 @@ public class Node {
             if(i<4) expKey[i]=key[i];
             else {
                 if(i%N==0){
+                    //rotateWord(subWord(expKey(i-1))) ^ rcon(i/n) ^ expKey(i-n)
                     byte[] x =rotateWord(expKey[i-1]);
                     for(int l=0;l<4;l++){
                         if(x[l]!=0)
@@ -259,7 +260,7 @@ public class Node {
                     }
                 }
                 else {
-
+                    //expKey(i-1)^expKey(i-N)
                     byte[] x = expKey[i - 1];
 
                     for(int l=0;l<4;l++){
@@ -327,7 +328,7 @@ public class Node {
                     for ( j=0;j<4;j++){
                         x[j]= (byte) ( (x[j]<<1) ^ (x[j]<<3)  ^ (x[j]<<6) ^ 0x5 );
                         if(i<4)
-                        x[j]= (byte) (x[j]^((byte)rcon[j]));
+                            x[j]= (byte) (x[j]^((byte)rcon[j]));
                         else  x[j]= (byte) (x[j]^((byte)rcon[(i/4)*4+j]));
                         expKey[i][j]= (byte) (x[j] ^ expKey[i - N][j]);
 
@@ -373,11 +374,11 @@ public class Node {
         for (int r=1;r<=10;r++) {
             //SubTypes
             for (i = 0; i < 4; i++) {
-               for(j=0;j<4;j++) {
-                   m[i][j]=getInverse(m[i][j]);
-                   byte t =m[i][j];
-                   m[i][j]= (byte) ( t ^ (t<<1) ^ (t<<2) ^ (t<<3) ^ (t<<4) ^ 0x63);
-               }
+                for(j=0;j<4;j++) {
+                    m[i][j]=getInverse(m[i][j]);
+                    byte t =m[i][j];
+                    m[i][j]= (byte) ( t ^ (t<<1) ^ (t<<2) ^ (t<<3) ^ (t<<4) ^ 0x63);
+                }
             }
 
 
@@ -407,21 +408,21 @@ public class Node {
             //MIX COLUMNS UP TO 9th ROUND
 
             if(r!=9){
-            byte[][] matrice = new byte[4][4];
-            matrice[0] = new byte[]{2, 3, 1, 1};
-            matrice[1] = new byte[]{1, 2, 3, 1};
-            matrice[2] = new byte[]{1, 1, 2, 3};
-            matrice[3] = new byte[]{3, 1, 1, 2};
+                byte[][] matrice = new byte[4][4];
+                matrice[0] = new byte[]{2, 3, 1, 1};
+                matrice[1] = new byte[]{1, 2, 3, 1};
+                matrice[2] = new byte[]{1, 1, 2, 3};
+                matrice[3] = new byte[]{3, 1, 1, 2};
 
-            byte[][] m2 = new byte[4][4];
-            for (int ind = 0; ind < 4; ind++)
-                for (i = 0; i < 4; i++) {
-                    m2[i][ind] = (byte) (matrice[i][0] * m[0][ind]);
-                    for (j = 1; j < 4; j++) {
-                        m2[i][ind] = (byte) ((matrice[i][j] * m[j][ind]) ^ m2[i][ind]);
+                byte[][] m2 = new byte[4][4];
+                for (int ind = 0; ind < 4; ind++)
+                    for (i = 0; i < 4; i++) {
+                        m2[i][ind] = (byte) (matrice[i][0] * m[0][ind]);
+                        for (j = 1; j < 4; j++) {
+                            m2[i][ind] = (byte) ((matrice[i][j] * m[j][ind]) ^ m2[i][ind]);
+                        }
                     }
-                }
-            m = m2;
+                m = m2;
             }
 
             //ADD ROUND KEY
@@ -448,7 +449,7 @@ public class Node {
 
 
         byte [][] expKey=expandKeyEnc();
-
+        //cripteaza vectorul de initializare iV mai intai
         for(i=0;i<4;i++){
             for(j=0;j<4;j++) {
                 iV[j][i]= (byte) (iV[j][i]^(expKey[i][j]));
@@ -510,11 +511,12 @@ public class Node {
             }
         }
 
-
+        //la final face xor cu mesajul
         for (int ind = 0; ind < 4; ind++)
             for (i = 0; i < 4; i++) {
                 m2[ind][i]= (byte) (m2[ind][i]^m[ind][i]);
             }
+        //modifica vectorul cu mesajul criptat pentru a putea face inlantuirea
         iV=m2;
         B.decCFB(m2);
     }
