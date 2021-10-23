@@ -727,9 +727,6 @@ public class Node {
 
                     }
 
-
-
-
                     if (i > 3) {
                         i = 0;
                         j = 0;
@@ -740,7 +737,7 @@ public class Node {
             }
             reader.close();
 
-            if(this.mode==0)
+            if(this.mode==0&&isFull!=16)
             { sendECB(m,node); }
             else { sendCFB(m,node); }
 
